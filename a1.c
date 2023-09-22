@@ -2,6 +2,49 @@
 
 #include <string.h> // for testing generate_splits()
 
+void swap(int *x, int *y) {
+    int temp = *x;
+    *x = *y;
+    *y = temp;
+}
+
+void reverse(int a[], int start, int end) {
+    while (start < end) {
+        swap(&a[start], &a[end]);
+        start++;
+        end--;
+    }
+}
+
+int pre_permutation(int a[], int n) {
+    int i;
+    for (i = n - 2; i >= 0; i--) {
+        if (a[i] > a[i + 1]) {
+            break;
+        }
+    }
+
+    if (i == -1) {
+        return 0;
+    }
+
+    int j;
+    for (j = n - 1; j > i; j--) {
+        if (a[j] < a[i]) {
+            break;
+        }
+    }
+
+    swap(&a[i], &a[j]);
+
+    for (int left = i + 1, right = n - 1; left < right; left++, right--) {
+        swap(&a[left], &a[right]);
+    }
+    return 1;
+}
+
+    
+
 /*
  * Generate k-selections of a[0..n-1] in lexicographic order and call process_selection to process them.
  *
@@ -12,18 +55,41 @@
  */
 void generate_selections(int a[], int n, int k, int b[], void *data, void (*process_selection)(int *b, int k, void *data))
 {
-    b[0] = 2; b[1] = 1;
-    process_selection(b, 2, data);
-    b[0] = 2; b[1] = 6;
-    process_selection(b, 2, data);
-    b[0] = 2; b[1] = 5;
-    process_selection(b, 2, data);
-    b[0] = 1; b[1] = 6;
-    process_selection(b, 2, data);
-    b[0] = 1; b[1] = 5;
-    process_selection(b, 2, data);
-    b[0] = 6; b[1] = 5;
-    process_selection(b, 2, data);
+    // b[0] = 2; b[1] = 1;
+    // process_selection(b, 2, data);
+    // b[0] = 2; b[1] = 6;
+    // process_selection(b, 2, data);
+    // b[0] = 2; b[1] = 5;
+    // process_selection(b, 2, data);
+    // b[0] = 1; b[1] = 6;
+    // process_selection(b, 2, data);
+    // b[0] = 1; b[1] = 5;
+    // process_selection(b, 2, data);
+    // b[0] = 6; b[1] = 5;
+    // process_selection(b, 2, data);
+    for (int i = 0; i < n-k; i++)
+    {
+
+        int j = i;
+        int m =0;
+        while(j<i+k-1){
+
+            b[m]  =a[j];
+            j++;
+            m++;
+        }
+        
+        int z = i+k-1;
+
+        while (z<n)
+        {
+            b[m] = a[z];
+            process_selection(b, k, data);
+            z++;
+        }
+        
+        
+    }
 }
 
 /*
@@ -36,10 +102,26 @@ void generate_selections(int a[], int n, int k, int b[], void *data, void (*proc
  */
 void generate_splits(const char *source, const char *dictionary[], int nwords, char buf[], void *data, void (*process_split)(char buf[], void *data))
 {
-    strcpy(buf, "art is toil");
-    process_split(buf, data);
-    strcpy(buf, "artist oil");
-    process_split(buf, data);
+    // strcpy(buf, "art is toil");
+    // process_split(buf, data);
+    // strcpy(buf, "artist oil");
+    // process_split(buf, data);
+    int len = strlen(source);
+    int i, j;
+
+    for (i = 0; i < len; i++) {
+        for (j = i + 1; j <= len; j++) {
+            strncpy(buf, source + i, j - i);
+            buf[j - i] = '\0';
+
+            for (int k = 0; k < nwords; k++) {
+                if (strcmp(buf, dictionary[k]) == 0) {
+                    process_split(buf, data);
+                    break;
+                }
+            }
+        }
+    }
 }
 
 /*
@@ -48,12 +130,20 @@ void generate_splits(const char *source, const char *dictionary[], int nwords, c
  */
 void previous_permutation(int a[], int n)
 {
-    a[0] = 1;
-    a[1] = 5;
-    a[2] = 4;
-    a[3] = 6;
-    a[4] = 3;
-    a[5] = 2;
+    // a[0] = 1;
+    // a[1] = 5;
+    // a[2] = 4;
+    // a[3] = 6;
+    // a[4] = 3;
+    // a[5] = 2;
+
+    int b =  pre_permutation(a, n);
+
+    
+
+
+
+    
 }
 
 /* Write your tests here. Use the previous assignment for reference. */
