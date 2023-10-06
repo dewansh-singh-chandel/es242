@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <assert.h>
 
-#define BOARD_SIZE (4)
+#define BOARD_SIZE (3)
 
 typedef char player_t; // 'X' or 'O'
 typedef char board_t[BOARD_SIZE][BOARD_SIZE]; // 'X' or 'O' or '.'
@@ -48,6 +48,7 @@ int has_won(board_t board, player_t player)
         }
         return 1;
     next_row:
+    continue;
     }
 
     for (int col = 0; col < BOARD_SIZE; ++col) {
@@ -58,6 +59,7 @@ int has_won(board_t board, player_t player)
         }
         return 1;
     next_col:
+    continue;
     }
 
     for (int i = 0; i < BOARD_SIZE; ++i) {

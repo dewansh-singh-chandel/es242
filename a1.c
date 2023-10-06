@@ -67,29 +67,21 @@ void generate_selections(int a[], int n, int k, int b[], void *data, void (*proc
     // process_selection(b, 2, data);
     // b[0] = 6; b[1] = 5;
     // process_selection(b, 2, data);
-    for (int i = 0; i < n-k; i++)
-    {
-
-        int j = i;
-        int m =0;
-        while(j<i+k-1){
-
-            b[m]  =a[j];
-            j++;
-            m++;
-        }
-        
-        int z = i+k-1;
-
-        while (z<n)
+     void generate(int idx, int remaining, int b_idx){
+        if (remaining == 0)
         {
-            b[m] = a[z];
             process_selection(b, k, data);
-            z++;
+            return;
         }
-        
-        
+
+        for (int i = idx; i <= n - remaining; i++)
+        {
+            b[b_idx] = a[i];
+            generate(i + 1, remaining - 1, b_idx + 1);
+        }
     }
+
+    generate(0, k, 0);
 }
 
 /*
@@ -100,28 +92,54 @@ void generate_selections(int a[], int n, int k, int b[], void *data, void (*proc
  * The dictionary parameter is an array of words, sorted in dictionary order.
  * nwords is the number of words in this dictionary.
  */
-void generate_splits(const char *source, const char *dictionary[], int nwords, char buf[], void *data, void (*process_split)(char buf[], void *data))
+void generate_splits_helper(const char *source, const char *dictionary[], int nwords, char buf[], int sourceIndex, int bufIndex, void *data, void (*process_split)(char buf[], void *data))
 {
-    // strcpy(buf, "art is toil");
-    // process_split(buf, data);
-    // strcpy(buf, "artist oil");
-    // process_split(buf, data);
-    int len = strlen(source);
-    int i, j;
+    if (sourceIndex == strlen(source)) {
+        buf[bufIndex] = '\0';
+        process_split(buf, data);
+        return;
+    }
 
-    for (i = 0; i < len; i++) {
-        for (j = i + 1; j <= len; j++) {
-            strncpy(buf, source + i, j - i);
-            buf[j - i] = '\0';
+    char word[100]; 
+    int wordIndex;
+    wordIndex = 0; 
 
-            for (int k = 0; k < nwords; k++) {
-                if (strcmp(buf, dictionary[k]) == 0) {
-                    process_split(buf, data);
-                    break;
+    while (sourceIndex < strlen(source)) {
+        word[wordIndex] = source[sourceIndex];
+        wordIndex++;
+        sourceIndex++;
+        word[wordIndex] = '\0';
+        int i =0;
+        while(i<nwords) {
+            if (strcmp(word, dictionary[i]) == 0) {
+                strcpy(buf + bufIndex, word);
+                bufIndex += strlen(word);
+                if (sourceIndex < strlen(source)) {
+                    buf[bufIndex] = ' ';
+                    bufIndex++;
+                }
+
+                generate_splits_helper(source, dictionary, nwords, buf, sourceIndex, bufIndex, data, process_split);
+
+                bufIndex -= strlen(word);
+                if (sourceIndex < strlen(source)) {
+                    bufIndex--;
                 }
             }
+            i++;
         }
     }
+}
+
+void generate_splits(const char *source, const char *dictionary[], int nwords, char buf[], void *data, void (*process_split)(char buf[], void *data))
+{
+    int sourceIndex = 0;
+    int bufIndex = 0;
+    generate_splits_helper(source, dictionary, nwords, buf, sourceIndex, bufIndex, data, process_split);
+}
+
+void process_split(char buf[], void *data) {
+    printf("%s\n", buf);
 }
 
 /*
