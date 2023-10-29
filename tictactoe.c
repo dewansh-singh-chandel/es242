@@ -198,7 +198,7 @@ move_t best_move(board_t board, player_t player)
                 }
                 response = best_move(board, other_player(player));
                 board[row][col] = '.';
-                if (response.score == -1) {
+                if (response.score == -1) { 
                     computed_moves[o] = encode_move(candidate = (move_t) {
                         .row = row,
                         .col = col,
